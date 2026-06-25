@@ -11,7 +11,7 @@ const DB_PATH = path.join(DATA_DIR, "db.json");
 const ABILITIES = [
   { key: "endurance", label: "耐力" },
   { key: "strength", label: "体力" },
-  { key: "technique", label: "技�? },
+  { key: "technique", label: "技能" },
   { key: "safety", label: "安全意识" },
   { key: "teamwork", label: "协作" },
 ];
