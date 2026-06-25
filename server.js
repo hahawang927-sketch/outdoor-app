@@ -58,13 +58,14 @@ async function readPgDb() {
     pool.query("SELECT * FROM activities"),
     pool.query("SELECT * FROM user_profiles"),
   ]);
+  const users = usersR.rows.map(u => ({ id: u.id, username: u.username, passwordHash: u.password_hash, salt: u.salt, createdAt: u.created_at }));
   const sessions = {};
   for (const s of sessionsR.rows) sessions[s.token] = { userId: s.user_id, createdAt: s.created_at };
   const activities = {};
-  for (const a of activitiesR.rows) activities[a.id] = { ...a, participants: a.participants || [], ratings: a.ratings || [] };
+  for (const a of activitiesR.rows) activities[a.id] = { id: a.id, name: a.name, createdBy: a.created_by, createdAt: a.created_at, participants: a.participants || [], ratings: a.ratings || [], updatedAt: a.updated_at };
   const userProfiles = {};
-  for (const p of profilesR.rows) userProfiles[p.user_id] = p;
-  return { version: 2, standard: { min: SCORE_MIN, max: SCORE_MAX, abilities: ABILITIES }, users: usersR.rows, sessions, activities, userProfiles, updatedAt: new Date().toISOString() };
+  for (const p of profilesR.rows) userProfiles[p.user_id] = { displayName: p.display_name, bio: p.bio || "", city: p.city || "", phone: p.phone || "", preferences: p.preferences || "", createdAt: p.created_at, updatedAt: p.updated_at };
+  return { version: 2, standard: { min: SCORE_MIN, max: SCORE_MAX, abilities: ABILITIES }, users, sessions, activities, userProfiles, updatedAt: new Date().toISOString() };
 }
 
 async function writePgDb(db) {
