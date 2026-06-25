@@ -1,5 +1,2 @@
-{
-	"dependencies": {
-		"cloudflared": "^0.7.1"
-	}
-}
+{"dependencies":{"cloudflared":"^0.7.1","pg":"^8.13.0"}}
+
