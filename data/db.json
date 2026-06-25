@@ -1,0 +1,139 @@
+{
+  "version": 2,
+  "standard": {
+    "min": 1,
+    "max": 5,
+    "abilities": [
+      {
+        "key": "endurance",
+        "label": "耐力"
+      },
+      {
+        "key": "strength",
+        "label": "体力"
+      },
+      {
+        "key": "technique",
+        "label": "技能"
+      },
+      {
+        "key": "safety",
+        "label": "安全意识"
+      },
+      {
+        "key": "teamwork",
+        "label": "协作"
+      }
+    ]
+  },
+  "users": [
+    {
+      "id": "usr_5844ee82bf338c2f",
+      "username": "u1",
+      "passwordHash": "0209468387644237a7aa414273725150ea40cb49978fad5f223fe19ddf4f1405f35903da4fdbcbbb5a1684e85552d40bff1f3d52e52a256ce892ea200bf5a26a",
+      "salt": "0f85888a403077ad8da00dcfcfc4cdec",
+      "createdAt": "2026-06-25T11:30:21.068Z"
+    },
+    {
+      "id": "usr_761d301af5558d3a",
+      "username": "testu",
+      "passwordHash": "1e63018e7a3b4f896c03312563d77720519769d1cb51dda8faafdfe83265c0a9b5a5dca69fdfed6533ff031b29f84487d071e52b20e2e4ab80da7ca68c34dd5c",
+      "salt": "3543608e2baacd831573963c80525e8b",
+      "createdAt": "2026-06-25T11:30:42.016Z"
+    },
+    {
+      "id": "usr_3dce1efe35635676",
+      "username": "01",
+      "passwordHash": "7aa4647c96e75cd5889ba0987a0e9928554f9f3ac255fae841cb9f1f36c42411e4f510873cb102919dcda24f4b0e2fc53d1cd73d69a5dee6d602a7cf3f9ae114",
+      "salt": "667f57fdbd8d661a44650b214ef53321",
+      "createdAt": "2026-06-25T11:33:20.701Z"
+    }
+  ],
+  "sessions": {
+    "ed50d0ad-b922-492e-96ad-3059a5306e0a0dfe2f87-53ea-4f61-8291-02aacff8ffa2": {
+      "userId": "usr_5844ee82bf338c2f",
+      "createdAt": "2026-06-25T11:30:21.068Z"
+    },
+    "bf135e82-80e2-4a2f-a621-14f6013753f180d74501-5c9e-45d8-8514-5d9062b82cac": {
+      "userId": "usr_761d301af5558d3a",
+      "createdAt": "2026-06-25T11:30:42.016Z"
+    },
+    "77880bd8-9fd5-4bce-8d89-a48b230fa90513a76c20-ca3b-4b54-bf6a-6fc81abadc5a": {
+      "userId": "usr_3dce1efe35635676",
+      "createdAt": "2026-06-25T11:33:20.701Z"
+    },
+    "d6758218-450d-4a0b-9790-d244eb5d8ad013f3c8fc-cf76-42f2-8cac-da2cdab9d11b": {
+      "userId": "usr_3dce1efe35635676",
+      "createdAt": "2026-06-25T11:38:58.747Z"
+    }
+  },
+  "activities": {
+    "act_afc4cdfe52d6dad8": {
+      "id": "act_afc4cdfe52d6dad8",
+      "name": "????",
+      "createdBy": "usr_5844ee82bf338c2f",
+      "createdAt": "2026-06-25T11:30:21.193Z",
+      "participants": [],
+      "ratings": [],
+      "updatedAt": "2026-06-25T11:30:21.212Z"
+    },
+    "act_6c7c7854f7738fe5": {
+      "id": "act_6c7c7854f7738fe5",
+      "name": "??",
+      "createdBy": "usr_761d301af5558d3a",
+      "createdAt": "2026-06-25T11:30:42.172Z",
+      "participants": [],
+      "ratings": [],
+      "updatedAt": "2026-06-25T11:30:42.190Z"
+    },
+    "act_7b6511da9acd20db": {
+      "id": "act_7b6511da9acd20db",
+      "name": "武功山",
+      "createdBy": "usr_3dce1efe35635676",
+      "createdAt": "2026-06-25T11:33:39.925Z",
+      "participants": [],
+      "ratings": [],
+      "updatedAt": "2026-06-25T11:33:52.783Z"
+    },
+    "act_445d8f85558ae878": {
+      "id": "act_445d8f85558ae878",
+      "name": "1",
+      "createdBy": "usr_3dce1efe35635676",
+      "createdAt": "2026-06-25T11:41:35.731Z",
+      "participants": [
+        "usr_3dce1efe35635676"
+      ],
+      "ratings": [],
+      "updatedAt": "2026-06-25T11:41:35.731Z"
+    }
+  },
+  "userProfiles": {
+    "usr_5844ee82bf338c2f": {
+      "displayName": "????",
+      "bio": "?????",
+      "city": "??",
+      "phone": "",
+      "preferences": "",
+      "createdAt": "2026-06-25T11:30:21.158Z",
+      "updatedAt": "2026-06-25T11:30:21.167Z"
+    },
+    "usr_761d301af5558d3a": {
+      "displayName": "??",
+      "bio": "",
+      "city": "",
+      "phone": "",
+      "preferences": "",
+      "createdAt": "2026-06-25T11:30:42.149Z",
+      "updatedAt": "2026-06-25T11:30:42.159Z"
+    },
+    "usr_3dce1efe35635676": {
+      "displayName": "01",
+      "bio": "",
+      "city": "",
+      "phone": "",
+      "preferences": "",
+      "createdAt": "2026-06-25T11:33:25.092Z"
+    }
+  },
+  "updatedAt": "2026-06-25T11:41:35.731Z"
+}

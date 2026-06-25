@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "standard": {
+    "min": 1,
+    "max": 5,
+    "abilities": [
+      {
+        "key": "endurance",
+        "label": "耐力"
+      },
+      {
+        "key": "strength",
+        "label": "体力"
+      },
+      {
+        "key": "technique",
+        "label": "技能"
+      },
+      {
+        "key": "safety",
+        "label": "安全意识"
+      },
+      {
+        "key": "teamwork",
+        "label": "协作"
+      }
+    ]
+  },
+  "members": [
+    {
+      "id": "b08c6839d85ff928",
+      "alias": "Trail-7F3A",
+      "createdAt": "2026-06-25T10:17:15.844Z"
+    },
+    {
+      "id": "b506e2e58154dcc3",
+      "alias": "Ridge-42D1",
+      "createdAt": "2026-06-25T10:17:15.844Z"
+    },
+    {
+      "id": "fde137d005f9f389",
+      "alias": "Pine-91C8",
+      "createdAt": "2026-06-25T10:17:15.845Z"
+    }
+  ],
+  "ratings": [
+    {
+      "id": "71c44c1a-493c-4ed8-b581-bafd20ac97d9",
+      "raterAnonId": "7300d2df8b84c630",
+      "targetMemberId": "b08c6839d85ff928",
+      "scores": {
+        "endurance": 5,
+        "strength": 4,
+        "technique": 4,
+        "safety": 5,
+        "teamwork": 4
+      },
+      "createdAt": "2026-06-25T10:17:15.845Z"
+    },
+    {
+      "id": "d804e957-95e3-45c2-88d7-c3f080d5190b",
+      "raterAnonId": "84ee2c2a2ae5148a",
+      "targetMemberId": "b506e2e58154dcc3",
+      "scores": {
+        "endurance": 3,
+        "strength": 4,
+        "technique": 3,
+        "safety": 4,
+        "teamwork": 5
+      },
+      "createdAt": "2026-06-25T10:17:15.846Z"
+    },
+    {
+      "id": "6a7e0f15-b8eb-4f3e-a9a3-db3c41a5698a",
+      "raterAnonId": "3b3e97049f382fbb",
+      "targetMemberId": "fde137d005f9f389",
+      "scores": {
+        "endurance": 4,
+        "strength": 3,
+        "technique": 5,
+        "safety": 4,
+        "teamwork": 4
+      },
+      "createdAt": "2026-06-25T10:17:15.846Z"
+    }
+  ],
+  "updatedAt": "2026-06-25T10:17:15.846Z"
+}

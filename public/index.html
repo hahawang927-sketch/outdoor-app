@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>户外约伴 - 活动管理</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<!-- ============ AUTH ============ -->
+<div id="authView" class="auth-view">
+  <div class="auth-card">
+    <h1>户外约伴</h1>
+    <p class="auth-subtitle">注册或登录以管理活动</p>
+    <form id="authForm" class="auth-form">
+      <div class="auth-tabs">
+        <button type="button" id="tabLogin" class="auth-tab active">登录</button>
+        <button type="button" id="tabRegister" class="auth-tab">注册</button>
+      </div>
+      <label>用户名 <input id="authUsername" type="text" autocomplete="username" placeholder="至少2字符" minlength="2" required /></label>
+      <label>密码 <input id="authPassword" type="password" autocomplete="current-password" placeholder="至少4字符" minlength="4" required /></label>
+      <button type="submit" id="authSubmit">登录</button>
+      <p id="authError" class="auth-error"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="appView" class="app-view" hidden>
+  <header class="topbar">
+    <h1>户外约伴</h1>
+    <div class="user-info">
+      <strong id="userDisplay">-</strong>
+      <button id="logoutButton" type="button" class="btn-outline">退出</button>
+    </div>
+  </header>
+  <nav class="main-nav">
+    <button type="button" class="main-nav-btn active" data-page="activities">活动</button>
+    <button type="button" class="main-nav-btn" data-page="profile">个人</button>
+  </nav>
+
+
+  <!-- ===== ACTIVITIES LIST ===== -->
+  
+  <!-- ===== PROFILE ===== -->
+  <div id="viewProfile" class="page-view">
+    <main class="layout layout-wide">
+      <section class="workspace">
+        <div class="toolbar"><h2>个人信息</h2></div>
+        <div class="profile-form">
+          <label>显示名称 <input id="pfName" maxlength="24" placeholder="你的昵称" /></label>
+          <label>个人简介 <textarea id="pfBio" maxlength="200" placeholder="介绍一下自己"></textarea></label>
+          <label>城市 <input id="pfCity" maxlength="20" placeholder="所在城市" /></label>
+          <label>手机 <input id="pfPhone" maxlength="20" placeholder="联系方式" /></label>
+          <label>偏好 <textarea id="pfPrefs" maxlength="200" placeholder="例如：喜欢越野路线"></textarea></label>
+          <button id="pfSave" type="button">保存信息</button>
+          <p id="pfStatus" class="hint"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="viewActivities" class="page-view active">
+    <main class="layout layout-wide">
+      <section class="workspace">
+        <div class="toolbar">
+          <h2>我的活动</h2>
+        </div>
+        <div class="create-act-row">
+          <label>新活动名称 <input id="newActName" maxlength="50" placeholder="例如：周末梧桐山" /></label>
+          <button id="createActBtn" type="button">创建活动</button>
+        </div>
+        <div id="activitiesList" class="activities-list">
+          <p class="hint">加载中...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== ACTIVITY DETAIL ===== -->
+  <div id="viewActivity" class="page-view">
+    <main class="layout">
+      <div class="breadcrumb">
+        <button id="backBtn" type="button">&larr; 返回活动列表</button>
+      </div>
+
+      <section class="workspace act-detail-header">
+        <div class="act-name-row">
+          <h2 id="actDetailName" contenteditable="false">活动名称</h2>
+          <div class="act-name-actions">
+            <button id="editNameBtn" type="button">编辑名称</button>
+            <button id="saveNameBtn" type="button" hidden>保存</button>
+            <button id="cancelEditBtn" type="button" hidden>取消</button>
+          </div>
+        </div>
+        <p class="act-meta" id="actDetailMeta">创建者: - | 参与者: -</p>
+      </section>
+
+      <aside class="panel participants-panel">
+        <h2>参与者</h2>
+        <div class="participants-actions">
+          <button id="joinActBtn" type="button">加入活动</button>
+          <button id="leaveActBtn" type="button" class="btn-danger">退出活动</button>
+        </div>
+        <div id="participantsList" class="participants-list">
+          <p class="hint">加载中...</p>
+        </div>
+        <p class="hint" id="actStatusText"></p>
+      </aside>
+
+      <aside class="panel ratings-panel">
+        <h2>提交评分</h2>
+        <div id="ratingFormArea">
+          <label>评分对象 <select id="ratingTargetSelect"></select></label>
+          <div id="scoreInputs" class="form-grid"></div>
+          <label>备注 <input id="ratingDesc" maxlength="200" placeholder="例如：今天表现很好" /></label>
+          <button id="submitRatingBtn" type="button">保存评分</button>
+        </div>
+        <p id="ratingStatus" class="hint"></p>
+      </aside>
+    </main>
+
+    <main class="layout layout-wide" style="margin-top: 16px;">
+      <section class="workspace">
+        <h2>能力雷达图</h2>
+        <div id="radarArea" class="radar-area"></div>
+      </section>
+    </main>
+
+    <main class="layout layout-wide" style="margin-top: 16px;">
+      <section class="workspace">
+        <div class="toolbar"><h2>评分记录</h2><button id="refreshRatingsBtn" type="button">刷新</button></div>
+        <div id="ratingsHistory" class="ratings-history"><p class="hint">加载中...</p></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
