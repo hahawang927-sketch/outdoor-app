@@ -118,7 +118,7 @@ function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&l
 /* ---- Activity Detail ---- */
 var backBtn = $("backBtn"), actDetailName = $("actDetailName"), actDetailMeta = $("actDetailMeta");
 var editNameBtn = $("editNameBtn"), saveNameBtn = $("saveNameBtn"), cancelEditBtn = $("cancelEditBtn");
-var joinActBtn = $("joinActBtn"), leaveActBtn = $("leaveActBtn");
+// joinActBtn/leaveActBtn handled via event delegation
 var participantsList = $("participantsList"), actStatusText = $("actStatusText");
 var ratingTargetSelect = $("ratingTargetSelect"), scoreInputs = $("scoreInputs");
 var ratingDesc = $("ratingDesc"), submitRatingBtn = $("submitRatingBtn");
@@ -147,8 +147,8 @@ async function loadActivityDetail() {
 
     /* Participants */
     var isIn = act.participants.some(function(p) { return p.userId === state.user.id; });
-    joinActBtn.style.display = isIn ? "none" : "";
-    leaveActBtn.style.display = isIn ? "" : "none";
+  var jb = document.getElementById('joinActBtn'); if (jb) jb.style.display = isIn ? 'none' : '';
+  var lb = document.getElementById('leaveActBtn'); if (lb) lb.style.display = isIn ? '' : 'none';
     participantsList.innerHTML = act.participants.map(function(p) {
       return '<div class="part-item' + (p.userId === state.user.id ? ' me' : '') + '">' +
         '<span class="part-name">' + escapeHtml(p.username) + (p.userId === state.user.id ? " (我)" : "") + "</span>" +
@@ -202,14 +202,6 @@ cancelEditBtn.onclick = function() {
 };
 
 /* Join/Leave */
-joinActBtn.onclick = async function() {
-  try {
-    var res = await fetch("/api/activities/" + state.currentActId + "/join", { method: "POST", headers: hdr() });
-    var data = await res.json();
-    if (!res.ok) throw new Error(data.error || "加入失败");
-    loadActivityDetail();
-  } catch (err) { actStatusText.textContent = err.message; }
-};
 leaveActBtn.onclick = async function() {
   try {
     var res = await fetch("/api/activities/" + state.currentActId + "/leave", { method: "POST", headers: hdr() });
@@ -351,4 +343,26 @@ if (tryRestoreSession()) {
 } else { showAuth(); }
 
 /* Nav */ document.querySelectorAll(".main-nav-btn").forEach(function(b){b.onclick=function(){document.querySelectorAll(".main-nav-btn").forEach(function(x){x.classList.remove("active")});b.classList.add("active");document.querySelectorAll(".page-view").forEach(function(v){v.classList.remove("active")});var t=$("view"+b.dataset.page.charAt(0).toUpperCase()+b.dataset.page.slice(1));if(t)t.classList.add("active");if(b.dataset.page==="profile")loadProfile()}});
+
+// Event delegation for join/leave buttons (dynamic DOM)
+document.getElementById("appView").addEventListener("click", async function(e) {
+  var actId = state.currentActId;
+  if (!actId) return;
+  if (e.target && e.target.id === "joinActBtn") {
+    try {
+      var res = await fetch("/api/activities/" + actId + "/join", { method: "POST", headers: hdr() });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || "加入失败");
+      loadActivityDetail();
+    } catch (err) { var st = document.getElementById("actStatusText"); if (st) st.textContent = err.message; }
+  } else if (e.target && e.target.id === "leaveActBtn") {
+    try {
+      var res = await fetch("/api/activities/" + actId + "/leave", { method: "POST", headers: hdr() });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || "退出失败");
+      showView("viewActivities");
+      loadActivities();
+    } catch (err) { var st2 = document.getElementById("actStatusText"); if (st2) st2.textContent = err.message; }
+  }
+});
 /* Profile */ var pN=$("pfName"),pB=$("pfBio"),pC=$("pfCity"),pP=$("pfPhone"),pR=$("pfPrefs"),pS=$("pfSave"),pSt=$("pfStatus"); async function loadProfile(){try{var r=await fetch("/api/user/profile",{headers:hdr()});if(!r.ok)throw Error("Failed");var d=await r.json();var pr=d.profile;pN.value=pr.displayName||"";pB.value=pr.bio||"";pC.value=pr.city||"";pP.value=pr.phone||"";pR.value=pr.preferences||"";pSt.textContent="";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}} pS.onclick=async function(){try{var r=await fetch("/api/user/profile",{method:"PUT",headers:hdr(),body:JSON.stringify({displayName:pN.value.trim(),bio:pB.value.trim(),city:pC.value.trim(),phone:pP.value.trim(),preferences:pR.value.trim()})});var d=await r.json();if(!r.ok)throw Error(d.error||"Failed");pSt.textContent="已保存";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}};
