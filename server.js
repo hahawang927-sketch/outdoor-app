@@ -1,4 +1,4 @@
-﻿const http = require("http");
+const http = require("http");
 const urlModule = require("url");
 const fs = require("fs");
 const path = require("path");
@@ -18,17 +18,16 @@ const ABILITIES = [
 const SCORE_MIN = 1;
 const SCORE_MAX = 5;
 
-// ============ Database Interface ============
 let pool = null;
 
 async function ensurePgDb() {
   if (!process.env.DATABASE_URL) return false;
   const { Pool } = require("pg");
   pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-  await pool.query('CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL)');
-  await pool.query('CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL)');
-  await pool.query('CREATE TABLE IF NOT EXISTS activities (id TEXT PRIMARY KEY, name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, participants JSONB DEFAULT \'[]\', ratings JSONB DEFAULT \'[]\', updated_at TEXT NOT NULL)');
-  await pool.query('CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT \'\', city TEXT DEFAULT \'\', phone TEXT DEFAULT \'\', preferences TEXT DEFAULT \'\', created_at TEXT, updated_at TEXT)');
+  await pool.query("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL)");
+  await pool.query("CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL)");
+  await pool.query("CREATE TABLE IF NOT EXISTS activities (id TEXT PRIMARY KEY, name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, participants JSONB DEFAULT '[]', ratings JSONB DEFAULT '[]', updated_at TEXT NOT NULL)");
+  await pool.query("CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT '', city TEXT DEFAULT '', phone TEXT DEFAULT '', preferences TEXT DEFAULT '', created_at TEXT, updated_at TEXT)");
   return true;
 }
 
@@ -71,7 +70,7 @@ async function readPgDb() {
 async function writePgDb(db) {
   const client = await pool.connect();
   try {
-    /* -- BEGIN skipped skipped, each write is standalone */;
+    await client.query("BEGIN");
     await client.query("DELETE FROM users");
     for (const u of db.users) await client.query("INSERT INTO users(id,username,password_hash,salt,created_at) VALUES($1,$2,$3,$4,$5)", [u.id, u.username, u.passwordHash, u.salt, u.createdAt]);
     await client.query("DELETE FROM sessions");
@@ -80,12 +79,15 @@ async function writePgDb(db) {
     for (const a of Object.values(db.activities)) await client.query("INSERT INTO activities(id,name,created_by,created_at,participants,ratings,updated_at) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7)", [a.id, a.name, a.createdBy, a.createdAt, JSON.stringify(a.participants), JSON.stringify(a.ratings), a.updatedAt]);
     await client.query("DELETE FROM user_profiles");
     for (const [uid, p] of Object.entries(db.userProfiles)) await client.query("INSERT INTO user_profiles(user_id,display_name,bio,city,phone,preferences,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)", [uid, p.displayName || "", p.bio || "", p.city || "", p.phone || "", p.preferences || "", p.createdAt || "", p.updatedAt || ""]);
-  
-  } catch (e) { throw e; }
-  finally { client.release(); }
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw e;
+  } finally {
+    client.release();
+  }
 }
 
-// ============ Helpers ============
 function hashPassword(password, salt) { return crypto.scryptSync(password, salt, 64).toString("hex"); }
 function generateSalt() { return crypto.randomBytes(16).toString("hex"); }
 function makeUserId() { return "usr_" + crypto.randomBytes(8).toString("hex"); }
@@ -99,55 +101,62 @@ async function getAuthUser(db, req) {
 }
 function normalizeScores(input) {
   const scores = {};
-  for (const a of ABILITIES) {
-    const v = Number(input[a.key]);
-    if (!Number.isInteger(v) || v < SCORE_MIN || v > SCORE_MAX) throw new Error(a.label + " must be " + SCORE_MIN + "-" + SCORE_MAX);
-    scores[a.key] = v;
-  }
+  for (const a of ABILITIES) scores[a.key] = Math.min(SCORE_MAX, Math.max(SCORE_MIN, Number(input[a.key]) || SCORE_MIN));
   return scores;
 }
-function sendJson(res, status, body) {
-  res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
-  res.end(JSON.stringify(body));
-}
-function serveStatic(req, res) {
-  const parsed = urlModule.parse(req.url);
-  const requested = parsed.pathname === "/" ? "/index.html" : decodeURIComponent(parsed.pathname);
-  const fp = path.normalize(path.join(PUBLIC_DIR, requested));
-  if (!fp.startsWith(PUBLIC_DIR)) { res.writeHead(403); res.end("Forbidden"); return; }
-  fs.readFile(fp, (err, data) => {
-    if (err) { res.writeHead(404); res.end("Not found"); return; }
-    const mimeMap = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
-    res.writeHead(200, { "content-type": mimeMap[path.extname(fp)] || "application/octet-stream" });
-    res.end(data);
-  });
-}
+function sendJson(res, status, data) { const s = JSON.stringify(data); res.writeHead(status, { "content-type": "application/json; charset=utf-8", "content-length": Buffer.byteLength(s), "cache-control": "no-store" }); res.end(s); }
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
+    req.setEncoding("utf8");
     req.on("data", (chunk) => { body += chunk; if (body.length > 1024 * 1024) { reject(new Error("Request too large")); req.destroy(); } });
     req.on("end", () => { try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error("Invalid JSON")); } });
     req.on("error", reject);
   });
 }
-async function summarizeActivity(act) {
-  const db = await readDb();
+
+function serveStatic(req, res) {
+  let fp = PUBLIC_DIR + urlModule.parse(req.url).pathname;
+  if (fp.endsWith("/")) fp = fp.slice(0, -1);
+  if (!fp.startsWith(PUBLIC_DIR)) { res.writeHead(403); res.end(); return; }
+  if (fs.statSync(fp).isDirectory()) fp += "/index.html";
+  if (!fs.existsSync(fp)) { res.writeHead(404); res.end("Not found"); return; }
+  const mimeMap = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
+  res.writeHead(200, { "content-type": mimeMap[path.extname(fp)] || "application/octet-stream" });
+  fs.createReadStream(fp).pipe(res);
+}
+
+function summarizeActivityFromDb(db, act) {
   const userMap = {};
   for (const u of db.users) userMap[u.id] = u.username;
-  const participants = act.participants.map((pid) => ({ userId: pid, username: userMap[pid] || "Unknown" }));
+  const participants = (act.participants || []).map((pid) => ({ userId: pid, username: userMap[pid] || "Unknown" }));
   const averages = {};
-  for (const pid of act.participants) {
-    const related = act.ratings.filter((r) => r.targetId === pid);
+  for (const pid of act.participants || []) {
+    const related = (act.ratings || []).filter((r) => r.targetId === pid);
     if (related.length === 0) continue;
     const totals = Object.fromEntries(ABILITIES.map((a) => [a.key, 0]));
     for (const r of related)
       for (const a of ABILITIES) totals[a.key] += r.scores[a.key];
     averages[pid] = Object.fromEntries(ABILITIES.map((a) => [a.key, Number((totals[a.key] / related.length).toFixed(2))]));
   }
-  return { id: act.id, name: act.name || act.name || "未命名", createdBy: act.createdBy || act.created_by, createdAt: act.createdAt || act.created_at, participants, participantCount: (act.participants && Array.isArray(act.participants)) ? act.participants.length : 0, ratings: act.ratings || [], averages, updatedAt: act.updatedAt || act.updated_at };
+  return {
+    id: act.id,
+    name: act.name || "未命名",
+    createdBy: act.createdBy || "",
+    createdAt: act.createdAt || "",
+    participants,
+    participantCount: Array.isArray(act.participants) ? act.participants.length : 0,
+    ratings: act.ratings || [],
+    averages,
+    updatedAt: act.updatedAt || ""
+  };
 }
 
-// ============ HTTP Server ============
+async function summarizeActivity(act) {
+  const db = await readDb();
+  return summarizeActivityFromDb(db, act);
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const db = await readDb();
@@ -159,45 +168,46 @@ const server = http.createServer(async (req, res) => {
     if (method === "POST" && url === "/api/auth/register") {
       const { username, password } = await readBody(req);
       if (!username || !password || String(username).length < 2 || String(password).length < 4) throw new Error("Invalid username/password");
-      if (db.users.find((u) => u.username === username)) throw new Error("Username taken");
+      if (db.users.find((u) => u.username === String(username))) throw new Error("Username taken");
       const salt = generateSalt();
-      const ue = { id: makeUserId(), username, passwordHash: hashPassword(password, salt), salt, createdAt: new Date().toISOString() };
-      db.users.push(ue);
+      db.users.push({ id: makeUserId(), username: String(username), passwordHash: hashPassword(String(password), salt), salt, createdAt: new Date().toISOString() });
       const token = makeSessionToken();
-      db.sessions[token] = { userId: ue.id, createdAt: new Date().toISOString() };
+      db.sessions[token] = { userId: db.users[db.users.length - 1].id, createdAt: new Date().toISOString() };
       await writeDb(db);
-      sendJson(res, 201, { token, user: { id: ue.id, username: ue.username } });
+      sendJson(res, 201, { token, user: { id: db.users[db.users.length - 1].id, username: String(username) } });
       return;
     }
     if (method === "POST" && url === "/api/auth/login") {
       const { username, password } = await readBody(req);
-      const ue = db.users.find((u) => u.username === username);
-      if (!ue || hashPassword(password, ue.salt) !== ue.passwordHash) throw new Error("Bad credentials");
+      if (!username || !password) throw new Error("Invalid credentials");
+      const u = db.users.find((u) => u.username === String(username));
+      if (!u || u.passwordHash !== hashPassword(String(password), u.salt)) throw new Error("Invalid credentials");
       const token = makeSessionToken();
-      db.sessions[token] = { userId: ue.id, createdAt: new Date().toISOString() };
+      db.sessions[token] = { userId: u.id, createdAt: new Date().toISOString() };
       await writeDb(db);
-      sendJson(res, 200, { token, user: { id: ue.id, username: ue.username } });
+      sendJson(res, 200, { token, user: { id: u.id, username: u.username } });
       return;
     }
     if (method === "POST" && url === "/api/auth/logout") {
-      const m = (req.headers["authorization"] || "").match(/^Bearer\s+(.+)$/i);
-      if (m) delete db.sessions[m[1]];
-      await writeDb(db); sendJson(res, 200, { ok: true }); return;
+      const a = (req.headers["authorization"] || "").match(/^Bearer\s+(.+)$/i);
+      if (a && db.sessions[a[1]]) { delete db.sessions[a[1]]; await writeDb(db); }
+      sendJson(res, 200, { ok: true });
+      return;
     }
     if (method === "GET" && url === "/api/auth/me") {
-      if (!user) { sendJson(res, 401, { error: "Not logged in" }); return; }
-      sendJson(res, 200, { user: { id: user.id, username: user.username } }); return;
+      if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
+      sendJson(res, 200, { user: { id: user.id, username: user.username } });
+      return;
     }
-    if (url.startsWith("/api/") && !user) { sendJson(res, 401, { error: "Login required" }); return; }
 
-    const actMatchGet = url.match(/^\/api\/activities(?:\/|$)/);
-    if (actMatchGet) {
+    if (url.startsWith("/api/activities")) {
       const parts = url.split("/");
       const actId = parts[3] || null;
       const action = parts[4] || null;
 
       if (method === "GET" && !actId) {
-        const list = Object.values(db.activities).filter((a) => a.participants.includes(user.id)).map((a) => summarizeActivity(a));
+        const filtered = Object.values(db.activities).filter((a) => a.participants.includes(user.id));
+        const list = await Promise.all(filtered.map((a) => summarizeActivityFromDb(db, a)));
         sendJson(res, 200, { activities: list.reverse() });
         return;
       }
@@ -207,7 +217,7 @@ const server = http.createServer(async (req, res) => {
         const act = { id: makeActId(), name: String(name).trim(), createdBy: user.id, createdAt: new Date().toISOString(), participants: [user.id], ratings: [], updatedAt: new Date().toISOString() };
         db.activities[act.id] = act;
         await writeDb(db);
-        sendJson(res, 201, { activity: await summarizeActivity(act) });
+        sendJson(res, 201, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (!actId || !db.activities[actId]) { sendJson(res, 404, { error: "Not found" }); return; }
@@ -215,7 +225,7 @@ const server = http.createServer(async (req, res) => {
 
       if (method === "GET" && actId && !action) {
         if (!act.participants.includes(user.id)) throw new Error("Not a member");
-        sendJson(res, 200, { activity: await summarizeActivity(act) });
+        sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (method === "PUT" && actId && !action) {
@@ -224,7 +234,7 @@ const server = http.createServer(async (req, res) => {
         act.name = String(name).trim();
         act.updatedAt = new Date().toISOString();
         await writeDb(db);
-        sendJson(res, 200, { activity: await summarizeActivity(act) });
+        sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (method === "POST" && actId && action === "join") {
@@ -232,7 +242,7 @@ const server = http.createServer(async (req, res) => {
         act.participants.push(user.id);
         act.updatedAt = new Date().toISOString();
         await writeDb(db);
-        sendJson(res, 200, { activity: await summarizeActivity(act) });
+        sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (method === "POST" && actId && action === "leave") {
@@ -241,7 +251,7 @@ const server = http.createServer(async (req, res) => {
         act.participants.splice(idx, 1);
         act.updatedAt = new Date().toISOString();
         await writeDb(db);
-        sendJson(res, 200, { activity: await summarizeActivity(act) });
+        sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (method === "POST" && actId && action === "ratings") {
@@ -254,14 +264,16 @@ const server = http.createServer(async (req, res) => {
         act.ratings.push(rating);
         act.updatedAt = new Date().toISOString();
         await writeDb(db);
-        sendJson(res, 201, { activity: await summarizeActivity(act) });
+        sendJson(res, 201, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
       if (method === "GET" && actId && action === "ratings") {
-        sendJson(res, 200, { ratings: [...act.ratings].reverse(), activity: await summarizeActivity(act) });
+        sendJson(res, 200, { ratings: [...act.ratings].reverse(), activity: summarizeActivityFromDb(db, act) });
         return;
       }
     }
+
+    if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
 
     if (url === "/api/user/profile" || url.startsWith("/api/user/profile/")) {
       if (!db.userProfiles) db.userProfiles = {};
@@ -294,11 +306,6 @@ const server = http.createServer(async (req, res) => {
   } catch (error) { sendJson(res, 400, { error: error.message }); }
 });
 
-// ============ Startup ============
 ensurePgDb()
   .then(() => { ensureFileDb(); server.listen(PORT, () => console.log("Server running on port " + PORT)); })
   .catch((e) => { console.error("DB init error:", e); process.exit(1); });
-
-
-
-
