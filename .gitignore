@@ -1,0 +1,8 @@
+﻿node_modules/
+*.log
+data/
+*.bak
+app_remote.js
+server_fixed.js
+server_remote.js
+server_tmp.js

@@ -1,2 +1,10 @@
-{"dependencies":{"cloudflared":"^0.7.1","pg":"^8.13.0"}}
-
+﻿{
+    "dependencies":  {
+                         "cloudflared":  "^0.7.1",
+                         "pg":  "^8.13.0"
+                     },
+    "scripts":  {
+                    "start":  "node server.js"
+                },
+    "main":  "server.js"
+}
