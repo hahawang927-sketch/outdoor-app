@@ -149,6 +149,7 @@ async function loadActivityDetail() {
     var isIn = act.participants.some(function(p) { return p.userId === state.user.id; });
   var jb = document.getElementById('joinActBtn'); if (jb) jb.style.display = isIn ? 'none' : '';
   var lb = document.getElementById('leaveActBtn'); if (lb) lb.style.display = isIn ? '' : 'none';
+    var cb = document.getElementById('cancelActBtn'); if (cb) cb.style.display = (isIn && act.createdBy === state.user.id) ? '' : 'none';
     participantsList.innerHTML = act.participants.map(function(p) {
       return '<div class="part-item' + (p.userId === state.user.id ? ' me' : '') + '">' +
         '<span class="part-name">' + escapeHtml(p.username) + (p.userId === state.user.id ? " (我)" : "") + "</span>" +

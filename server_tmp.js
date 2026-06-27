@@ -1,4 +1,4 @@
-const http = require("http");
+﻿const http = require("http");
 const urlModule = require("url");
 const fs = require("fs");
 const path = require("path");
@@ -201,7 +201,6 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.startsWith("/api/activities")) {
-      if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
       const parts = url.split("/");
       const actId = parts[3] || null;
       const action = parts[4] || null;
@@ -246,15 +245,7 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
-      if (method === "POST" && actId && 
-      if (method === "DELETE" && actId && !action) {
-        if (act.createdBy !== user.id) throw new Error("Only creator can cancel");
-        delete db.activities[actId];
-        await writeDb(db);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-action === "leave") {
+      if (method === "POST" && actId && action === "leave") {
         const idx = act.participants.indexOf(user.id);
         if (idx === -1) throw new Error("Not a member");
         act.participants.splice(idx, 1);
