@@ -1,4 +1,4 @@
-const http = require("http");
+      if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }\nconst http = require("http");
 const urlModule = require("url");
 const fs = require("fs");
 const path = require("path");
@@ -129,7 +129,7 @@ function serveStatic(req, res) {
 function summarizeActivityFromDb(db, act) {
   const userMap = {};
   for (const u of db.users) userMap[u.id] = u.username;
-  const participants = (act.participants || []).map((pid) => ({ userId: pid, username: userMap[pid] || "Unknown", abilityScores: (db.userProfiles && db.userProfiles[pid] && db.userProfiles[pid].abilityScores) || null }));
+  const participants = (act.participants || []).map((pid) => ({ userId: pid, username: userMap[pid] || "Unknown" }));
   const averages = {};
   for (const pid of act.participants || []) {
     const related = (act.ratings || []).filter((r) => r.targetId === pid);
@@ -141,7 +141,7 @@ function summarizeActivityFromDb(db, act) {
   }
   return {
     id: act.id,
-    name: act.name || "未命名",
+    name: act.name || "未命�?,
     createdBy: act.createdBy || "",
     createdAt: act.createdAt || "",
     participants,
@@ -246,15 +246,7 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
-      if (method === "POST" && actId && 
-      if (method === "DELETE" && actId && !action) {
-        if (act.createdBy !== user.id) throw new Error("Only creator can cancel");
-        delete db.activities[actId];
-        await writeDb(db);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-action === "leave") {
+      if (method === "POST" && actId && action === "leave") {
         const idx = act.participants.indexOf(user.id);
         if (idx === -1) throw new Error("Not a member");
         act.participants.splice(idx, 1);
@@ -286,7 +278,7 @@ action === "leave") {
       if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
       if (!db.userProfiles) db.userProfiles = {};
       if (!db.userProfiles[user.id]) {
-        db.userProfiles[user.id] = { displayName: user.username, bio: "", city: "", phone: "", preferences: "", abilityScores: { endurance: 3, strength: 3, technique: 3, safety: 3, teamwork: 3 }, createdAt: new Date().toISOString() };
+        db.userProfiles[user.id] = { displayName: user.username, bio: "", city: "", phone: "", preferences: "", createdAt: new Date().toISOString() };
         await writeDb(db);
       }
     }
@@ -294,9 +286,8 @@ action === "leave") {
       sendJson(res, 200, { profile: db.userProfiles[user.id] });
       return;
     }
-        if (method === "PUT" && url === "/api/user/profile") {
-      const body = await readBody(req);
-      const { displayName, bio, city, phone, preferences, abilityScores } = body;
+    if (method === "PUT" && url === "/api/user/profile") {
+      const { displayName, bio, city, phone, preferences } = await readBody(req);
       if (!db.userProfiles) db.userProfiles = {};
       if (!db.userProfiles[user.id]) db.userProfiles[user.id] = { createdAt: new Date().toISOString() };
       if (displayName !== undefined) db.userProfiles[user.id].displayName = String(displayName).trim() || user.username;
@@ -304,12 +295,9 @@ action === "leave") {
       if (city !== undefined) db.userProfiles[user.id].city = String(city).trim();
       if (phone !== undefined) db.userProfiles[user.id].phone = String(phone).trim();
       if (preferences !== undefined) db.userProfiles[user.id].preferences = String(preferences).trim();
-      if (abilityScores !== undefined) db.userProfiles[user.id].abilityScores = abilityScores;
       db.userProfiles[user.id].updatedAt = new Date().toISOString();
       await writeDb(db);
       sendJson(res, 200, { profile: db.userProfiles[user.id] });
-      return;
-    });
       return;
     }
 
@@ -321,3 +309,4 @@ action === "leave") {
 ensurePgDb()
   .then(() => { ensureFileDb(); server.listen(PORT, () => console.log("Server running on port " + PORT)); })
   .catch((e) => { console.error("DB init error:", e); process.exit(1); });
+

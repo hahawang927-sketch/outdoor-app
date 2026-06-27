@@ -151,10 +151,18 @@ async function loadActivityDetail() {
   var lb = document.getElementById('leaveActBtn'); if (lb) lb.style.display = isIn ? '' : 'none';
     var cb = document.getElementById('cancelActBtn'); if (cb) cb.style.display = (isIn && act.createdBy === state.user.id) ? '' : 'none';
     participantsList.innerHTML = act.participants.map(function(p) {
+      var scores = p.abilityScores;
+      var hasScores = scores && Object.values(scores).some(function(v) { return v > 0; });
       return '<div class="part-item' + (p.userId === state.user.id ? ' me' : '') + '">' +
-        '<span class="part-name">' + escapeHtml(p.username) + (p.userId === state.user.id ? " (我)" : "") + "</span>" +
-        '<span class="part-status">' + (act.averages[p.userId] ? "已评分" : "待评分") + "</span></div>";
-    }).join("");
+        '<div class="part-info">' +
+        '<span class="part-name">' + escapeHtml(p.username) + (p.userId === state.user.id ? " (我)" : "") + '</span>' +
+        '<span class="part-status">' + (act.averages[p.userId] ? "已评分" : "待评分") + '</span>' +
+        '</div>' +
+        (hasScores ? '<div class="part-abilities">' + ABILITIES.map(function(a) {
+          return '<span class="abil-badge">' + a.label + ":" + (scores[a.key] || 0) + '</span>';
+        }).join("") + '</div>' : '') +
+        '</div>';
+    }).join("")("");
 
     /* Rating form */
     var others = act.participants.filter(function(p) { return p.userId !== state.user.id; });
@@ -357,4 +365,23 @@ document.getElementById("appView").addEventListener("click", async function(e) {
     } catch (err) { var st2 = document.getElementById("actStatusText"); if (st2) st2.textContent = err.message; }
   }
 });
-/* Profile */ var pN=$("pfName"),pB=$("pfBio"),pC=$("pfCity"),pP=$("pfPhone"),pR=$("pfPrefs"),pS=$("pfSave"),pSt=$("pfStatus"); async function loadProfile(){try{var r=await fetch("/api/user/profile",{headers:hdr()});if(!r.ok)throw Error("Failed");var d=await r.json();var pr=d.profile;pN.value=pr.displayName||"";pB.value=pr.bio||"";pC.value=pr.city||"";pP.value=pr.phone||"";pR.value=pr.preferences||"";pSt.textContent="";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}} pS.onclick=async function(){try{var r=await fetch("/api/user/profile",{method:"PUT",headers:hdr(),body:JSON.stringify({displayName:pN.value.trim(),bio:pB.value.trim(),city:pC.value.trim(),phone:pP.value.trim(),preferences:pR.value.trim()})});var d=await r.json();if(!r.ok)throw Error(d.error||"Failed");pSt.textContent="已保存";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}};
+/* Profile */ var pN=$("pfName"),pB=$("pfBio"),pC=$("pfCity"),pP=$("pfPhone"),pR=$("pfPrefs"),pS=$("pfSave"),pSt=$("pfStatus"); 
+function renderAbilityEditor() {
+  var pr = state.profile;
+  if (!pr) return;
+  var scores = pr.abilityScores || { endurance: 3, strength: 3, technique: 3, safety: 3, teamwork: 3 };
+  var area = document.getElementById("abilityEditor");
+  if (!area) return;
+  area.innerHTML = ABILITIES.map(function(a) {
+    var v = scores[a.key] || 3;
+    return '<label class="range-row"><span>' + a.label + '</span>' +
+      '<input name="pf_' + a.key + '" type="range" min="1" max="5" step="1" value="' + v + '" />' +
+      '<output>' + v + '</output></label>';
+  }).join("");
+  area.querySelectorAll("input").forEach(function(input) {
+    input.addEventListener("input", function() { input.nextElementSibling.textContent = input.value; });
+  });
+}
+
+async function loadProfile(){try{var r=await fetch("/api/user/profile",{headers:hdr()});if(!r.ok)throw Error("Failed");var d=await r.json();var pr=d.profile;pN.value=pr.displayName||"";pB.value=pr.bio||"";pC.value=pr.city||"";pP.value=pr.phone||"";pR.value=pr.preferences||"";renderAbilityEditor();pSt.textContent="";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}} pS.onclick=async function(){try{var r=await fetch("/api/user/profile",{method:"PUT",headers:hdr(),body:JSON.stringify({displayName:pN.value.trim(),bio:pB.value.trim(),city:pC.value.trim(),phone:pP.value.trim(),preferences:pR.value.trim()})});var d=await r.json();if(!r.ok)throw Error(d.error||"Failed");pSt.textContent="已保存";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}};
+)});var d=await r.json();if(!r.ok)throw Error(d.error||"Failed");pSt.textContent="已保存";pSt.className="hint"}catch(e){pSt.textContent=e.message;pSt.className="hint error"}};
