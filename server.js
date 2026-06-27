@@ -144,7 +144,7 @@ async function summarizeActivity(act) {
       for (const a of ABILITIES) totals[a.key] += r.scores[a.key];
     averages[pid] = Object.fromEntries(ABILITIES.map((a) => [a.key, Number((totals[a.key] / related.length).toFixed(2))]));
   }
-  return { id: act.id, name: act.name || act.name, createdBy: act.createdBy || act.created_by, createdAt: act.createdAt || act.created_at, participants, participantCount: Array.isArray(act.participants) ? act.participants.length : 0, ratings: act.ratings || [], averages, updatedAt: act.updatedAt || act.updated_at };
+  return { id: act.id, name: act.name || act.name || "未命名", createdBy: act.createdBy || act.created_by, createdAt: act.createdAt || act.created_at, participants, participantCount: (act.participants && Array.isArray(act.participants)) ? act.participants.length : 0, ratings: act.ratings || [], averages, updatedAt: act.updatedAt || act.updated_at };
 }
 
 // ============ HTTP Server ============
@@ -298,6 +298,7 @@ const server = http.createServer(async (req, res) => {
 ensurePgDb()
   .then(() => { ensureFileDb(); server.listen(PORT, () => console.log("Server running on port " + PORT)); })
   .catch((e) => { console.error("DB init error:", e); process.exit(1); });
+
 
 
 
