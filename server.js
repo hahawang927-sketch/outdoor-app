@@ -201,6 +201,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.startsWith("/api/activities")) {
+      if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
       const parts = url.split("/");
       const actId = parts[3] || null;
       const action = parts[4] || null;
