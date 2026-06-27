@@ -202,15 +202,6 @@ cancelEditBtn.onclick = function() {
 };
 
 /* Join/Leave */
-leaveActBtn.onclick = async function() {
-  try {
-    var res = await fetch("/api/activities/" + state.currentActId + "/leave", { method: "POST", headers: hdr() });
-    var data = await res.json();
-    if (!res.ok) throw new Error(data.error || "退出失败");
-    showView("viewActivities");
-    loadActivities();
-  } catch (err) { actStatusText.textContent = err.message; }
-};
 
 /* Score inputs */
 function renderScoreInputs() {
