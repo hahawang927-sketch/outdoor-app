@@ -9,11 +9,11 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = path.join(ROOT, "data");
 const DB_PATH = path.join(DATA_DIR, "db.json");
 const ABILITIES = [
-  { key: "endurance", label: "鑰愬姏" },
-  { key: "strength", label: "浣撳姏" },
-  { key: "technique", label: "技能 },
-  { key: "safety", label: "瀹夊叏鎰忚瘑" },
-  { key: "teamwork", label: "鍗忎綔" },
+  { key: "endurance", label: "Endurance" },
+  { key: "strength", label: "Strength" },
+  { key: "technique", label: "Technique" },
+  { key: "safety", label: "Safety" },
+  { key: "teamwork", label: "Teamwork" },
 ];
 const SCORE_MIN = 1;
 const SCORE_MAX = 5;
