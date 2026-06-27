@@ -273,9 +273,8 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
-
     if (url === "/api/user/profile" || url.startsWith("/api/user/profile/")) {
+      if (!user) { sendJson(res, 401, { error: "Unauthorized" }); return; }
       if (!db.userProfiles) db.userProfiles = {};
       if (!db.userProfiles[user.id]) {
         db.userProfiles[user.id] = { displayName: user.username, bio: "", city: "", phone: "", preferences: "", createdAt: new Date().toISOString() };
