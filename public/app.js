@@ -49,7 +49,7 @@ logoutButton.onclick = async function() {
 function showAuth() { authView.hidden = false; appView.hidden = true; authUsername.value = ""; authPassword.value = ""; authError.textContent = ""; }
 function enterApp() {
   authView.hidden = true; appView.hidden = false;
-  userDisplay.textContent = state.user.username;
+  userDisplay.textContent = "用户: " + state.user.username;
   loadActivities();
 }
 
