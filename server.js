@@ -1,4 +1,4 @@
-const http = require("http");
+﻿const http = require("http");
 const urlModule = require("url");
 const fs = require("fs");
 const path = require("path");
@@ -9,11 +9,11 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = path.join(ROOT, "data");
 const DB_PATH = path.join(DATA_DIR, "db.json");
 const ABILITIES = [
-  { key: "endurance", label: "耐力" },
-  { key: "strength", label: "体力" },
-  { key: "technique", label: "技能" },
-  { key: "safety", label: "安全意识" },
-  { key: "teamwork", label: "协作" },
+  { key: "endurance", label: "鑰愬姏" },
+  { key: "strength", label: "浣撳姏" },
+  { key: "technique", label: "鎶€鑳? },
+  { key: "safety", label: "瀹夊叏鎰忚瘑" },
+  { key: "teamwork", label: "鍗忎綔" },
 ];
 const SCORE_MIN = 1;
 const SCORE_MAX = 5;
@@ -69,11 +69,9 @@ async function readPgDb() {
 }
 
 async function writePgDb(db) {
-  if (db._pgWritten) return;
-  db._pgWritten = true;
   const client = await pool.connect();
   try {
-    await client.query("BEGIN");
+    /* -- BEGIN skipped skipped, each write is standalone */;
     await client.query("DELETE FROM users");
     for (const u of db.users) await client.query("INSERT INTO users(id,username,password_hash,salt,created_at) VALUES($1,$2,$3,$4,$5)", [u.id, u.username, u.passwordHash, u.salt, u.createdAt]);
     await client.query("DELETE FROM sessions");
@@ -82,8 +80,8 @@ async function writePgDb(db) {
     for (const a of Object.values(db.activities)) await client.query("INSERT INTO activities(id,name,created_by,created_at,participants,ratings,updated_at) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7)", [a.id, a.name, a.createdBy, a.createdAt, JSON.stringify(a.participants), JSON.stringify(a.ratings), a.updatedAt]);
     await client.query("DELETE FROM user_profiles");
     for (const [uid, p] of Object.entries(db.userProfiles)) await client.query("INSERT INTO user_profiles(user_id,display_name,bio,city,phone,preferences,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)", [uid, p.displayName || "", p.bio || "", p.city || "", p.phone || "", p.preferences || "", p.createdAt || "", p.updatedAt || ""]);
-    await client.query("COMMIT");
-  } catch (e) { await client.query("ROLLBACK"); throw e; }
+  
+  } catch (e) { throw e; }
   finally { client.release(); }
 }
 
@@ -300,4 +298,5 @@ const server = http.createServer(async (req, res) => {
 ensurePgDb()
   .then(() => { ensureFileDb(); server.listen(PORT, () => console.log("Server running on port " + PORT)); })
   .catch((e) => { console.error("DB init error:", e); process.exit(1); });
+
 
