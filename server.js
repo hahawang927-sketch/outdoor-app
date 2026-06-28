@@ -208,8 +208,7 @@ const server = http.createServer(async (req, res) => {
       const action = parts[4] || null;
 
       if (method === "GET" && !actId) {
-        const filtered = Object.values(db.activities).filter((a) => a.participants.includes(user.id));
-        const list = await Promise.all(filtered.map((a) => summarizeActivityFromDb(db, a)));
+        const list = await Promise.all(Object.values(db.activities).map((a) => summarizeActivityFromDb(db, a)));
         sendJson(res, 200, { activities: list.reverse() });
         return;
       }
