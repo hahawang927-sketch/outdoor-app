@@ -27,7 +27,8 @@ async function ensurePgDb() {
   await pool.query("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL)");
   await pool.query("CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL)");
   await pool.query("CREATE TABLE IF NOT EXISTS activities (id TEXT PRIMARY KEY, name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, participants JSONB DEFAULT '[]', ratings JSONB DEFAULT '[]', updated_at TEXT NOT NULL)");
-  await pool.query("CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT '', city TEXT DEFAULT '', phone TEXT DEFAULT '', preferences TEXT DEFAULT '', created_at TEXT, updated_at TEXT)");
+  await pool.query("CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT '', city TEXT DEFAULT '', phone TEXT DEFAULT '', preferences TEXT DEFAULT '', ability_scores TEXT DEFAULT '', created_at TEXT, updated_at TEXT)
+    await pool.query("ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ability_scores TEXT DEFAULT ''");
   return true;
 }
 
@@ -63,7 +64,7 @@ async function readPgDb() {
   const activities = {};
   for (const a of activitiesR.rows) activities[a.id] = { id: a.id, name: a.name, createdBy: a.created_by, createdAt: a.created_at, participants: a.participants || [], ratings: a.ratings || [], updatedAt: a.updated_at };
   const userProfiles = {};
-  for (const p of profilesR.rows) userProfiles[p.user_id] = { displayName: p.display_name, bio: p.bio || "", city: p.city || "", phone: p.phone || "", preferences: p.preferences || "", createdAt: p.created_at, updatedAt: p.updated_at };
+  for (const p of profilesR.rows) userProfiles[p.user_id] = { displayName: p.display_name, bio: p.bio || "", city: p.city || "", phone: p.phone || "", preferences: p.preferences || "", abilityScores: p.ability_scores ? JSON.parse(p.ability_scores) : null, createdAt: p.created_at, updatedAt: p.updated_at };
   return { version: 2, standard: { min: SCORE_MIN, max: SCORE_MAX, abilities: ABILITIES }, users, sessions, activities, userProfiles, updatedAt: new Date().toISOString() };
 }
 
@@ -78,7 +79,7 @@ async function writePgDb(db) {
     await client.query("DELETE FROM activities");
     for (const a of Object.values(db.activities)) await client.query("INSERT INTO activities(id,name,created_by,created_at,participants,ratings,updated_at) VALUES($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7)", [a.id, a.name, a.createdBy, a.createdAt, JSON.stringify(a.participants), JSON.stringify(a.ratings), a.updatedAt]);
     await client.query("DELETE FROM user_profiles");
-    for (const [uid, p] of Object.entries(db.userProfiles)) await client.query("INSERT INTO user_profiles(user_id,display_name,bio,city,phone,preferences,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)", [uid, p.displayName || "", p.bio || "", p.city || "", p.phone || "", p.preferences || "", p.createdAt || "", p.updatedAt || ""]);
+    for (const [uid, p] of Object.entries(db.userProfiles)) await client.query("INSERT INTO user_profiles(user_id,display_name,bio,city,phone,preferences,ability_scores,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)", [uid, p.displayName || "", p.bio || "", p.city || "", p.phone || "", p.preferences || "", JSON.stringify(p.abilityScores || {endurance:3,strength:3,technique:3,safety:3,teamwork:3}) || "", p.createdAt || "", p.updatedAt || ""]);
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK").catch(() => {});
