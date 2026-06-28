@@ -146,11 +146,11 @@ async function loadActivityDetail() {
     editNameBtn.hidden = false; saveNameBtn.hidden = true; cancelEditBtn.hidden = true;
 
     /* Participants */
-    var isIn = act.participants.some(function(p) { return p.userId === state.user.id; });
+    
   var jb = document.getElementById('joinActBtn'); if (jb) jb.style.display = isIn ? 'none' : '';
   var lb = document.getElementById('leaveActBtn'); if (lb) lb.style.display = isIn ? '' : 'none';
-    var cb = document.getElementById('cancelActBtn'); if (cb) cb.style.display = (isIn && act.createdBy === state.user.id) ? '' : 'none';
-    participantsList.innerHTML = act.participants.map(function(p) {
+    var parts = act.participants || []; var isIn = parts.some(function(p) { return p.userId === state.user.id; }); var cb = document.getElementById('cancelActBtn'); if (cb) cb.style.display = (isIn && act.createdBy === state.user.id) ? '' : 'none';
+    participantsList.innerHTML = parts.map(function(p) {
       var scores = p.abilityScores;
       var hasScores = scores && Object.values(scores).some(function(v) { return v > 0; });
       return '<div class="part-item' + (p.userId === state.user.id ? ' me' : '') + '">' +
