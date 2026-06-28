@@ -365,7 +365,7 @@ document.getElementById("appView").addEventListener("click", async function(e) {
     } catch (err) { var st2 = document.getElementById("actStatusText"); if (st2) st2.textContent = err.message; }
   }
 
-  } else if (e.target && e.target.id === "cancelActBtn") {
+  else if (e.target && e.target.id === "cancelActBtn") {
     if (!confirm("确定取消此活动？")) return;
     try {
       var res = await fetch("/api/activities/" + actId, { method: "DELETE", headers: hdr() });
