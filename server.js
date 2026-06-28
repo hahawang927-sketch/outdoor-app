@@ -27,7 +27,7 @@ async function ensurePgDb() {
   await pool.query("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL)");
   await pool.query("CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL)");
   await pool.query("CREATE TABLE IF NOT EXISTS activities (id TEXT PRIMARY KEY, name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, participants JSONB DEFAULT '[]', ratings JSONB DEFAULT '[]', updated_at TEXT NOT NULL)");
-  await pool.query("CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT '', city TEXT DEFAULT '', phone TEXT DEFAULT '', preferences TEXT DEFAULT '', ability_scores TEXT DEFAULT '', created_at TEXT, updated_at TEXT)
+  await pool.query("CREATE TABLE IF NOT EXISTS user_profiles (user_id TEXT PRIMARY KEY, display_name TEXT, bio TEXT DEFAULT '', city TEXT DEFAULT '', phone TEXT DEFAULT '', preferences TEXT DEFAULT '', ability_scores TEXT DEFAULT '', created_at TEXT, updated_at TEXT)");
     await pool.query("ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS ability_scores TEXT DEFAULT ''");
   return true;
 }

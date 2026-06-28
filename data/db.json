@@ -6,134 +6,126 @@
     "abilities": [
       {
         "key": "endurance",
-        "label": "耐力"
+        "label": "Endurance"
       },
       {
         "key": "strength",
-        "label": "体力"
+        "label": "Strength"
       },
       {
         "key": "technique",
-        "label": "技能"
+        "label": "Technique"
       },
       {
         "key": "safety",
-        "label": "安全意识"
+        "label": "Safety"
       },
       {
         "key": "teamwork",
-        "label": "协作"
+        "label": "Teamwork"
       }
     ]
   },
   "users": [
     {
-      "id": "usr_5844ee82bf338c2f",
-      "username": "u1",
-      "passwordHash": "0209468387644237a7aa414273725150ea40cb49978fad5f223fe19ddf4f1405f35903da4fdbcbbb5a1684e85552d40bff1f3d52e52a256ce892ea200bf5a26a",
-      "salt": "0f85888a403077ad8da00dcfcfc4cdec",
-      "createdAt": "2026-06-25T11:30:21.068Z"
+      "id": "usr_3e55f298253e08c1",
+      "username": "????1",
+      "passwordHash": "109ab1877a3f4aa7e9a0bc2d607c13613f6d2f061d4294c2d4a600071029d9f1e6df8096902dc453ce430930c4e7f5a2bee730c35f554e432bdde0585ddd3612",
+      "salt": "d52953cf7295460c472246176d227961",
+      "createdAt": "2026-06-27T12:50:09.089Z"
     },
     {
-      "id": "usr_761d301af5558d3a",
-      "username": "testu",
-      "passwordHash": "1e63018e7a3b4f896c03312563d77720519769d1cb51dda8faafdfe83265c0a9b5a5dca69fdfed6533ff031b29f84487d071e52b20e2e4ab80da7ca68c34dd5c",
-      "salt": "3543608e2baacd831573963c80525e8b",
-      "createdAt": "2026-06-25T11:30:42.016Z"
+      "id": "usr_d07be73703a267d1",
+      "username": "test_ability",
+      "passwordHash": "2a0dab0de2391db972c852b92828680501ffd9881e162dd9070c0c825d3da69636e9fb3a754bec7456843bbf46f0e57b4dc2374908c16b298118859798638b9d",
+      "salt": "ba5d218b2fcec91007adb8505b1fbd32",
+      "createdAt": "2026-06-27T12:57:00.770Z"
     },
     {
-      "id": "usr_3dce1efe35635676",
-      "username": "01",
-      "passwordHash": "7aa4647c96e75cd5889ba0987a0e9928554f9f3ac255fae841cb9f1f36c42411e4f510873cb102919dcda24f4b0e2fc53d1cd73d69a5dee6d602a7cf3f9ae114",
-      "salt": "667f57fdbd8d661a44650b214ef53321",
-      "createdAt": "2026-06-25T11:33:20.701Z"
+      "id": "usr_c06828afe58d77b1",
+      "username": "flowtest",
+      "passwordHash": "13ef2540b4b320eb5f1e6a6cceb6892dd6e69c8495668ff437d7df61e78b066ede83f5526d12eb7c6faad4696a411f75121d7281dcc8c4fc501abb1424f0812f",
+      "salt": "e737e09fbcd73eba32773f51b6e522d4",
+      "createdAt": "2026-06-27T12:57:13.938Z"
+    },
+    {
+      "id": "usr_f51e82f5e5dcbac3",
+      "username": "手机测试",
+      "passwordHash": "35e63be82756a9fbd7ee722bb19f3c08de18028309e4bc28a46d930571dc08e8a3fbf0a7a0a6adabaef8ffb47bce428ac4e32064f775e5ce43462acead4994f0",
+      "salt": "b4269f33a76726584764a10d0350b7c2",
+      "createdAt": "2026-06-27T12:59:05.658Z"
     }
   ],
   "sessions": {
-    "ed50d0ad-b922-492e-96ad-3059a5306e0a0dfe2f87-53ea-4f61-8291-02aacff8ffa2": {
-      "userId": "usr_5844ee82bf338c2f",
-      "createdAt": "2026-06-25T11:30:21.068Z"
+    "23dd772f-85bc-4204-92e2-52954caaaab638f31931-80e9-4b8e-9c1f-b82ed985a6be": {
+      "userId": "usr_3e55f298253e08c1",
+      "createdAt": "2026-06-27T12:50:09.089Z"
     },
-    "bf135e82-80e2-4a2f-a621-14f6013753f180d74501-5c9e-45d8-8514-5d9062b82cac": {
-      "userId": "usr_761d301af5558d3a",
-      "createdAt": "2026-06-25T11:30:42.016Z"
+    "b2cd929a-d0b4-4e06-9ae9-6e9fd74aefb9573205a6-130e-4564-867a-f17b5f2973bf": {
+      "userId": "usr_d07be73703a267d1",
+      "createdAt": "2026-06-27T12:57:00.771Z"
     },
-    "77880bd8-9fd5-4bce-8d89-a48b230fa90513a76c20-ca3b-4b54-bf6a-6fc81abadc5a": {
-      "userId": "usr_3dce1efe35635676",
-      "createdAt": "2026-06-25T11:33:20.701Z"
+    "15e9392a-05c3-4081-a0a4-b5776603bdcc45145273-e629-4f7f-b295-11426a9eb130": {
+      "userId": "usr_c06828afe58d77b1",
+      "createdAt": "2026-06-27T12:57:13.938Z"
     },
-    "d6758218-450d-4a0b-9790-d244eb5d8ad013f3c8fc-cf76-42f2-8cac-da2cdab9d11b": {
-      "userId": "usr_3dce1efe35635676",
-      "createdAt": "2026-06-25T11:38:58.747Z"
+    "17910c56-9aab-40a0-9156-2293b71079862aa009fb-e216-433c-a94d-5021371cf0ba": {
+      "userId": "usr_c06828afe58d77b1",
+      "createdAt": "2026-06-27T12:57:14.055Z"
+    },
+    "d7ce8daf-c8d9-4587-ae81-179d9db03a9e117a7391-f5c6-42d1-9c56-f57840c20bda": {
+      "userId": "usr_f51e82f5e5dcbac3",
+      "createdAt": "2026-06-27T12:59:05.658Z"
     }
   },
-  "activities": {
-    "act_afc4cdfe52d6dad8": {
-      "id": "act_afc4cdfe52d6dad8",
-      "name": "????",
-      "createdBy": "usr_5844ee82bf338c2f",
-      "createdAt": "2026-06-25T11:30:21.193Z",
-      "participants": [],
-      "ratings": [],
-      "updatedAt": "2026-06-25T11:30:21.212Z"
-    },
-    "act_6c7c7854f7738fe5": {
-      "id": "act_6c7c7854f7738fe5",
-      "name": "??",
-      "createdBy": "usr_761d301af5558d3a",
-      "createdAt": "2026-06-25T11:30:42.172Z",
-      "participants": [],
-      "ratings": [],
-      "updatedAt": "2026-06-25T11:30:42.190Z"
-    },
-    "act_7b6511da9acd20db": {
-      "id": "act_7b6511da9acd20db",
-      "name": "武功山",
-      "createdBy": "usr_3dce1efe35635676",
-      "createdAt": "2026-06-25T11:33:39.925Z",
-      "participants": [],
-      "ratings": [],
-      "updatedAt": "2026-06-25T11:33:52.783Z"
-    },
-    "act_445d8f85558ae878": {
-      "id": "act_445d8f85558ae878",
-      "name": "1",
-      "createdBy": "usr_3dce1efe35635676",
-      "createdAt": "2026-06-25T11:41:35.731Z",
-      "participants": [
-        "usr_3dce1efe35635676"
-      ],
-      "ratings": [],
-      "updatedAt": "2026-06-25T11:41:35.731Z"
-    }
-  },
+  "activities": {},
   "userProfiles": {
-    "usr_5844ee82bf338c2f": {
-      "displayName": "????",
-      "bio": "?????",
-      "city": "??",
-      "phone": "",
-      "preferences": "",
-      "createdAt": "2026-06-25T11:30:21.158Z",
-      "updatedAt": "2026-06-25T11:30:21.167Z"
-    },
-    "usr_761d301af5558d3a": {
-      "displayName": "??",
+    "usr_3e55f298253e08c1": {
+      "displayName": "????1",
       "bio": "",
       "city": "",
       "phone": "",
       "preferences": "",
-      "createdAt": "2026-06-25T11:30:42.149Z",
-      "updatedAt": "2026-06-25T11:30:42.159Z"
+      "abilityScores": {
+        "endurance": 5,
+        "strength": 4,
+        "technique": 3,
+        "safety": 4,
+        "teamwork": 3
+      },
+      "createdAt": "2026-06-27T12:50:09.143Z",
+      "updatedAt": "2026-06-27T12:50:09.182Z"
     },
-    "usr_3dce1efe35635676": {
-      "displayName": "01",
+    "usr_d07be73703a267d1": {
+      "displayName": "test_ability",
       "bio": "",
       "city": "",
       "phone": "",
       "preferences": "",
-      "createdAt": "2026-06-25T11:33:25.092Z"
+      "abilityScores": {
+        "endurance": 3,
+        "strength": 3,
+        "technique": 3,
+        "safety": 3,
+        "teamwork": 3
+      },
+      "createdAt": "2026-06-27T12:57:00.818Z"
+    },
+    "usr_c06828afe58d77b1": {
+      "displayName": "flowtest",
+      "bio": "",
+      "city": "",
+      "phone": "",
+      "preferences": "",
+      "abilityScores": {
+        "endurance": 3,
+        "strength": 3,
+        "technique": 3,
+        "safety": 3,
+        "teamwork": 3
+      },
+      "createdAt": "2026-06-27T12:57:13.989Z"
     }
   },
-  "updatedAt": "2026-06-25T11:41:35.731Z"
+  "updatedAt": "2026-06-27T12:59:05.658Z"
 }
