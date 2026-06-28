@@ -225,7 +225,6 @@ const server = http.createServer(async (req, res) => {
       const act = db.activities[actId];
 
       if (method === "GET" && actId && !action) {
-        if (!act.participants.includes(user.id)) throw new Error("Not a member");
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
@@ -263,7 +262,6 @@ const server = http.createServer(async (req, res) => {
         return;
       }if (method === "POST" && actId && action === "ratings") {
         const payload = await readBody(req);
-        if (!act.participants.includes(user.id)) throw new Error("Not a member");
         if (!act.participants.includes(payload.targetId)) throw new Error("Target not in activity");
         if (payload.targetId === user.id) throw new Error("Cannot rate self");
         const scores = normalizeScores(payload.scores);
