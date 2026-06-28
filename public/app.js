@@ -364,16 +364,16 @@ document.getElementById("appView").addEventListener("click", async function(e) {
       loadActivities();
     } catch (err) { var st2 = document.getElementById("actStatusText"); if (st2) st2.textContent = err.message; }
   }
+
   } else if (e.target && e.target.id === "cancelActBtn") {
-    if (!confirm("7ıı!ıııû¯ıı")) return;
+    if (!confirm("ç¡®å®šå–æ¶ˆæ­¤æ´»åŠ¨ï¼Ÿ")) return;
     try {
       var res = await fetch("/api/activities/" + actId, { method: "DELETE", headers: hdr() });
-      if (!res.ok) { var dd = await res.json(); throw new Error(dd.error || "!ıı§ıı"); }
+      if (!res.ok) { var dd = await res.json(); throw new Error(dd.error || "å–æ¶ˆå¤±è´¥"); }
       showView("viewActivities");
       loadActivities();
     } catch (err) { var st3 = document.getElementById("actStatusText"); if (st3) st3.textContent = err.message; }
-  }
-});
+  }});
 /* Profile */ var pN=$("pfName"),pB=$("pfBio"),pC=$("pfCity"),pP=$("pfPhone"),pR=$("pfPrefs"),pS=$("pfSave"),pSt=$("pfStatus"); 
 function renderAbilityEditor() {
   var pr = state.profile;
