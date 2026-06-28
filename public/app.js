@@ -105,7 +105,7 @@ async function loadActivities() {
       return '<div class="act-card" data-id="' + a.id + '">' +
         '<div class="act-card-body"><h3>' + escapeHtml(a.name) + '</h3>' +
         '<span class="act-card-meta">' + a.participantCount + ' 人参与</span></div>' +
-        '<div class="act-card-footer"><span>' + new Date(a.createdAt).toLocaleDateString() + "</span></div></div>";
+        '<div class="act-card-footer"><span>' + new Date(a.createdAt).toLocaleDateString() + "</span>" + (a.participants.some(function(p){return p.userId===state.user.id}) ? "<button class=\"btn-sm btn-enter\" onclick=\"event.stopPropagation();openActivity('"+a.id+"')\">����</button>" : "<button class=\"btn-sm\" onclick=\"event.stopPropagation();fetch('/api/activities/'+'"+a.id+"'+'/join',{method:'POST',headers:hdr()}).then(function(){loadActivities()})\">����</button>") + "</div></div>";
     }).join("");
     document.querySelectorAll(".act-card").forEach(function(card) {
       card.onclick = function() { openActivity(card.dataset.id); };
