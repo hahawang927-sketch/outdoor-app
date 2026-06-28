@@ -162,7 +162,7 @@ async function loadActivityDetail() {
           return '<span class="abil-badge">' + a.label + ":" + (scores[a.key] || 0) + '</span>';
         }).join("") + '</div>' : '') +
         '</div>';
-    }).join("")("");
+    }).join("");
 
     /* Rating form */
     var others = act.participants.filter(function(p) { return p.userId !== state.user.id; });
