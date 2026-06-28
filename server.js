@@ -238,7 +238,7 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
-      if (method === "POST" && actId && action === "join") {
+            if (method === "POST" && actId && action === "join") {
         if (act.participants.includes(user.id)) throw new Error("Already joined");
         act.participants.push(user.id);
         act.updatedAt = new Date().toISOString();
@@ -246,15 +246,7 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
-      if (method === "POST" && actId && 
-      if (method === "DELETE" && actId && !action) {
-        if (act.createdBy !== user.id) throw new Error("Only creator can cancel");
-        delete db.activities[actId];
-        await writeDb(db);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-action === "leave") {
+      if (method === "POST" && actId && action === "leave") {
         const idx = act.participants.indexOf(user.id);
         if (idx === -1) throw new Error("Not a member");
         act.participants.splice(idx, 1);
@@ -263,7 +255,13 @@ action === "leave") {
         sendJson(res, 200, { activity: summarizeActivityFromDb(db, act) });
         return;
       }
-      if (method === "POST" && actId && action === "ratings") {
+      if (method === "DELETE" && actId && !action) {
+        if (act.createdBy !== user.id) throw new Error("Only creator can cancel");
+        delete db.activities[actId];
+        await writeDb(db);
+        sendJson(res, 200, { ok: true });
+        return;
+      }if (method === "POST" && actId && action === "ratings") {
         const payload = await readBody(req);
         if (!act.participants.includes(user.id)) throw new Error("Not a member");
         if (!act.participants.includes(payload.targetId)) throw new Error("Target not in activity");
@@ -308,8 +306,6 @@ action === "leave") {
       db.userProfiles[user.id].updatedAt = new Date().toISOString();
       await writeDb(db);
       sendJson(res, 200, { profile: db.userProfiles[user.id] });
-      return;
-    });
       return;
     }
 
