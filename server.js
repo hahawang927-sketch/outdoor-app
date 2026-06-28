@@ -255,7 +255,7 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       if (method === "DELETE" && actId && !action) {
-        /* check removed */
+        if (act.createdBy !== user.id) throw new Error("Only creator can cancel");
         delete db.activities[actId];
         await writeDb(db);
         sendJson(res, 200, { ok: true });
